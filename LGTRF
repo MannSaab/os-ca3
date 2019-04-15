@@ -2,13 +2,17 @@
 #include<iostream>
 using namespace std;
 struct Process
+
 {
     int pid;
     int bt;
 };
+
 bool comparison(Process a, Process b)
 {
+    
     return (a.bt > b.bt);
+
 }
 int main()
 {
