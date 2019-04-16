@@ -1,149 +1,76 @@
-// C++ implementation for Priority Scheduling with 
-//Different Arrival Time priority scheduling 
-/*1. sort the processes according to arrival time 
-2. if arrival time is same the acc to priority 
-3. apply fcfs 
-*/
+#include<stdio.h>
 
-#include <bits/stdc++.h> 
+struct process
+{
+      char process_name;
+      int arrival_time, burst_time, ct, waiting_time, turnaround_time, priority;
+      int status;
+}process_queue[10];
 
-using namespace std; 
+int limit;
 
-#define totalprocess 5 
+void Arrival_Time_Sorting()
+{
+      struct process temp;
+      int i, j;
+      for(i = 0; i < limit - 1; i++)
+      {
+            for(j = i + 1; j < limit; j++)
+            {
+                  if(process_queue[i].arrival_time > process_queue[j].arrival_time)
+                  {
+                        temp = process_queue[i];
+                        process_queue[i] = process_queue[j];
+                        process_queue[j] = temp;
+                  }
+            }
+      }
+}
 
-// Making a struct to hold the given input 
-
-struct process 
-{ 
-int at,bt,pr,pno; 
-}; 
-
-process proc[50]; 
-
-/* 
-Writing comparator function to sort according to priority if 
-arrival time is same 
-*/
-
-bool comp(process a,process b) 
-{ 
-if(a.at == b.at) 
-{ 
-return a.pr<b.pr; 
-} 
-else
-{ 
-	return a.at<b.at; 
-} 
-} 
-
-// Using FCFS Algorithm to find Waiting time 
-void get_wt_time(int wt[]) 
-{ 
-// declaring service array that stores cumulative burst time 
-int service[50]; 
-
-// Initilising initial elements of the arrays 
-service[0]=0; 
-wt[0]=0; 
-
-
-for(int i=1;i<totalprocess;i++) 
-{ 
-service[i]=proc[i-1].bt+service[i-1]; 
-
-wt[i]=service[i]-proc[i].at+1; 
-
-// If waiting time is negative, change it into zero 
-	
-	if(wt[i]<0) 
-	{ 
-	wt[i]=0; 
-	} 
-} 
-
-} 
-
-void get_tat_time(int tat[],int wt[]) 
-{ 
-// Filling turnaroundtime array 
-
-for(int i=0;i<totalprocess;i++) 
-{ 
-	tat[i]=proc[i].bt+wt[i]; 
-} 
-	
-} 
-
-void findgc() 
-{ 
-//Declare waiting time and turnaround time array 
-int wt[50],tat[50]; 
-
-double wavg=0,tavg=0; 
-
-// Function call to find waiting time array 
-get_wt_time(wt); 
-//Function call to find turnaround time 
-get_tat_time(tat,wt); 
-	
-int stime[50],ctime[50]; 
-stime[0]=1; 
-ctime[0]=stime[0]+tat[0]; 
-// calculating starting and ending time 
-for(int i=1;i<totalprocess;i++) 
-	{ 
-		stime[i]=ctime[i-1]; 
-		ctime[i]=stime[i]+tat[i]-wt[i]; 
-	} 
-	
-cout<<"Process_no\tStart_time\tComplete_time\tTurn_Around_Time\tWaiting_Time"<<endl; 
-	
-	// display the process details 
-	
-for(int i=0;i<totalprocess;i++) 
-	{ 
-		wavg += wt[i]; 
-		tavg += tat[i]; 
-		
-		cout<<proc[i].pno<<"\t\t"<< 
-			stime[i]<<"\t\t"<<ctime[i]<<"\t\t"<< 
-			tat[i]<<"\t\t\t"<<wt[i]<<endl; 
-	} 
-	
-		// display the average waiting time 
-		//and average turn around time 
-	
-	cout<<"Average waiting time is : "; 
-	cout<<wavg/(float)totalprocess<<endl; 
-	cout<<"average turnaround time : "; 
-	cout<<tavg/(float)totalprocess<<endl; 
-
-} 
-
-int main() 
-{ 
-int arrivaltime[] = { 1, 2, 3, 4, 5 }; 
-int bursttime[] = { 3, 5, 1, 7, 4 }; 
-int priority[] = { 3, 4, 1, 7, 8 }; 
-	
-for(int i=0;i<totalprocess;i++) 
-{ 
-	proc[i].at=arrivaltime[i]; 
-	proc[i].bt=bursttime[i]; 
-	proc[i].pr=priority[i]; 
-	proc[i].pno=i+1; 
-	} 
-	
-	//Using inbuilt sort function 
-	
-	sort(proc,proc+totalprocess,comp); 
-	
-	//Calling function findgc for finding Gantt Chart 
-	
-	findgc(); 
-
-	return 0; 
-} 
-
-// This code is contributed by Anukul Chand. 
+int main()
+{
+      int i, time = 0, burst_time = 0, largest;
+      char c;
+      float wait_time = 0, turnaround_time = 0, average_waiting_time, average_turnaround_time;
+      printf("\nEnter Total Number of Processes:\t");
+      scanf("%d", &limit);
+      for(i = 0, c = 'A'; i < limit; i++, c++)
+      {
+            process_queue[i].process_name = c;
+            printf("\nEnter Details For Process[%C]:\n", process_queue[i].process_name);
+            printf("Enter Arrival Time:\t");
+            scanf("%d", &process_queue[i].arrival_time );
+            printf("Enter Burst Time:\t");
+            scanf("%d", &process_queue[i].burst_time);
+            printf("Enter Priority:\t");
+            scanf("%d", &process_queue[i].priority);
+            process_queue[i].status = 0;
+            burst_time = burst_time + process_queue[i].burst_time;
+      }
+      Arrival_Time_Sorting();
+      process_queue[9].priority = -9999;
+      printf("\nProcess Name\tArrival Time\tBurst Time\tPriority\tWaiting Time");
+      for(time = process_queue[0].arrival_time; time < burst_time;)
+      {
+            largest = 9;
+            for(i = 0; i < limit; i++)
+            {
+                  if(process_queue[i].arrival_time <= time && process_queue[i].status != 1 && process_queue[i].priority > process_queue[largest].priority)
+                  {
+                        largest = i;
+                  }
+            }
+            time = time + process_queue[largest].burst_time;
+            process_queue[largest].ct = time;
+            process_queue[largest].waiting_time = process_queue[largest].ct - process_queue[largest].arrival_time - process_queue[largest].burst_time;
+            process_queue[largest].turnaround_time = process_queue[largest].ct - process_queue[largest].arrival_time;
+            process_queue[largest].status = 1;
+            wait_time = wait_time + process_queue[largest].waiting_time;
+            turnaround_time = turnaround_time + process_queue[largest].turnaround_time;
+            printf("\n%c\t\t%d\t\t%d\t\t%d\t\t%d", process_queue[largest].process_name, process_queue[largest].arrival_time, process_queue[largest].burst_time, process_queue[largest].priority, process_queue[largest].waiting_time);
+      }
+      average_waiting_time = wait_time / limit;
+      average_turnaround_time = turnaround_time / limit;
+      printf("\n\nAverage waiting time:\t%f\n", average_waiting_time);
+      printf("Average Turnaround Time:\t%f\n", average_turnaround_time);
+}
