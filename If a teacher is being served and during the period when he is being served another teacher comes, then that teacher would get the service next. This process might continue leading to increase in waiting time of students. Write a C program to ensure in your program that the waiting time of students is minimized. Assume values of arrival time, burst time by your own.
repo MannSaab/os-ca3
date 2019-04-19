@@ -1,14 +1,12 @@
 #include<stdio.h>
-
 struct process
 {
       char process_name;
       int arrival_time, burst_time, ct, waiting_time, turnaround_time, priority;
       int status;
-}process_queue[10];
-
+}
+process_queue[10];
 int limit;
-
 void Arrival_Time_Sorting()
 {
       struct process temp;
@@ -26,7 +24,6 @@ void Arrival_Time_Sorting()
             }
       }
 }
-
 int main()
 {
       int i, time = 0, burst_time = 0, largest;
